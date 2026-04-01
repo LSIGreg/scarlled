@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Scarlled — новая соцсеть</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+        }
+
+        /* Auth forms */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1877f2, #0e5a9e);
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 32px 24px;
+        }
+
+        .auth-card h2 {
+            text-align: center;
+            color: #1877f2;
+            margin-bottom: 24px;
+            font-size: 28px;
+        }
+
+        .auth-card input {
+            width: 100%;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border: 1px solid #dddfe2;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .auth-card input:focus {
+            border-color: #1877f2;
+            box-shadow: 0 0 0 2px rgba(24,119,242,0.2);
+        }
+
+        .auth-card button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 16px;
+            cursor: pointer;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: #606770;
+        }
+
+        .auth-switch span {
+            color: #1877f2;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Main app */
+        .app-container {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1877f2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #1877f2;
+        }
+
+        .user-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .verified-badge {
+            font-size: 16px;
+            margin-left: 4px;
+        }
+
+        .blue-badge {
+            color: #1da1f2;
+        }
+
+        .gray-badge {
+            color: #657786;
+        }
+
+        .logout-btn {
+            background: #e4e6eb;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* Stories */
+        .stories-section {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .stories-container {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+        }
+
+        .story-item {
+            flex: 0 0 auto;
+            width: 100px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .story-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #1877f2;
+        }
+
+        .story-add {
+            background: #e4e6eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #1877f2;
+        }
+
+        .story-name {
+            font-size: 12px;
+            margin-top: 6px;
+            color: #65676b;
+        }
+
+        /* Main layout */
+        .main-layout {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .feed {
+            flex: 2;
+            min-width: 280px;
+        }
+
+        .sidebar {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        /* Post card */
+        .post-card {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .post-author {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #65676b;
+        }
+
+        .post-media {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .post-caption {
+            padding: 12px 16px;
+            border-top: 1px solid #e4e6eb;
+        }
+
+        .post-actions {
+            display: flex;
+            padding: 8px 16px;
+            border-top: 1px solid #e4e6eb;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #65676b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            background: #f0f2f5;
+        }
+
+        .liked {
+            color: #1877f2;
+        }
+
+        /* Comments section */
+        .comments-section {
+            padding: 12px 16px;
+            border-top: 1px solid #e4e6eb;
+            background: #fafafa;
+        }
+
+        .comment {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .comment-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-text {
+            background: #f0f2f5;
+            padding: 6px 10px;
+            border-radius: 18px;
+            flex: 1;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            margin-right: 6px;
+            cursor: pointer;
+        }
+
+        .add-comment {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .add-comment input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #dddfe2;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .add-comment button {
+            background: #1877f2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* Sidebar cards */
+        .suggestions-card, .admin-card, .verify-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .suggestions-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .suggestion-user {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .suggestion-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .suggestion-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .subscribe-btn {
+            background: #1877f2;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .unsubscribe-btn {
+            background: #e4e6eb;
+            color: #050505;
+        }
+
+        .request-item {
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .request-actions button {
+            margin-right: 8px;
+            padding: 4px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .approve-btn { background: #28a745; color: white; }
+        .reject-btn { background: #dc3545; color: white; }
+
+        /* Profile modal */
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 12px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 16px 0;
+        }
+
+        .profile-stats div {
+            font-weight: bold;
+        }
+
+        /* Fab */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: #1877f2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            padding: 24px;
+        }
+
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .modal-content button {
+            background: #1877f2;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 12px;
+            cursor: pointer;
+        }
+
+        .close-modal {
+            background: #e4e6eb;
+            color: black;
+        }
+
+        .story-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .story-viewer img, .story-viewer video {
+            max-width: 90%;
+            max-height: 80%;
+        }
+
+        .story-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="authContainer" class="auth-container">
+    <div class="auth-card">
+        <h2>🐦 Scarlled</h2>
+        <div id="authForms">
+            <div id="loginForm">
+                <input type="text" id="loginEmail" placeholder="Email или имя пользователя">
+                <input type="password" id="loginPassword" placeholder="Пароль">
+                <button id="doLogin">Войти</button>
+                <div class="auth-switch">Нет аккаунта? <span id="showRegister">Зарегистрироваться</span></div>
+            </div>
+            <div id="registerForm" style="display: none;">
+                <input type="text" id="regName" placeholder="Имя и фамилия">
+                <input type="text" id="regUsername" placeholder="Имя пользователя">
+                <input type="email" id="regEmail" placeholder="Email">
+                <input type="password" id="regPassword" placeholder="Пароль">
+                <input type="text" id="regAvatar" placeholder="URL аватара (необязательно)">
+                <button id="doRegister">Создать аккаунт</button>
+                <div class="auth-switch">Уже есть аккаунт? <span id="showLogin">Войти</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="appContainer" class="app-container">
+    <div class="header">
+        <div class="logo"><span class="logo-icon">🐦</span><span>Scarlled</span></div>
+        <div class="user-info">
+            <img id="currentUserAvatar" class="user-avatar">
+            <span id="currentUserName" class="user-name"></span>
+            <button class="logout-btn" id="logoutBtn">Выйти</button>
+        </div>
+    </div>
+
+    <div class="stories-section">
+        <div class="stories-container" id="storiesContainer"></div>
+    </div>
+
+    <div class="main-layout">
+        <div class="feed" id="feedContainer"></div>
+        <div class="sidebar">
+            <div id="verifyBlock" class="verify-card"></div>
+            <div id="adminBlock" class="admin-card" style="display:none;"></div>
+            <div class="suggestions-card">
+                <div class="suggestions-title">Рекомендации</div>
+                <div id="suggestionsList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="fab" class="fab">+</div>
+
+<!-- Modals -->
+<div id="postModal" class="modal"><div class="modal-content"><h3>Создать публикацию</h3><textarea id="postCaption" placeholder="Что у вас нового?"></textarea><input type="file" id="postFile" accept="image/*,video/*"><button id="submitPost">Опубликовать</button><button class="close-modal" id="closePostModal">Отмена</button></div></div>
+<div id="storyModal" class="modal"><div class="modal-content"><h3>Добавить историю</h3><input type="file" id="storyFile" accept="image/*,video/*"><button id="submitStory">Добавить</button><button class="close-modal" id="closeStoryModal">Отмена</button></div></div>
+<div id="profileModal" class="profile-modal"><div class="profile-card" id="profileCard"></div></div>
+<div id="storyViewer" class="story-viewer"><div class="story-close" id="closeStoryViewer">&times;</div><img id="viewerImage" style="display:none;"><video id="viewerVideo" controls style="display:none;"></video></div>
+
+<script>
+    let db = {
+        users: [],
+        posts: [],
+        stories: [],
+        likes: [],
+        subscriptions: [],
+        comments: [],
+        verificationRequests: [] // { userId, status }
+    };
+    let currentUserId = null;
+
+    function loadData() {
+        const stored = localStorage.getItem("scarlled_db");
+        if (stored) {
+            db = JSON.parse(stored);
+        } else {
+            const adminId = Date.now();
+            db.users = [
+                { id: adminId, name: "Admin", username: "admin", email: "admin@scarlled.com", password: "admin", avatar: "https://randomuser.me/api/portraits/men/99.jpg", role: "admin", verified: true },
+                { id: adminId+1, name: "Анна Смирнова", username: "anna", email: "anna@demo.com", password: "123", avatar: "https://randomuser.me/api/portraits/women/1.jpg", role: "user", verified: false },
+                { id: adminId+2, name: "Иван Петров", username: "ivan", email: "ivan@demo.com", password: "123", avatar: "https://randomuser.me/api/portraits/men/2.jpg", role: "user", verified: false },
+                { id: adminId+3, name: "Мария Козлова", username: "maria", email: "maria@demo.com", password: "123", avatar: "https://randomuser.me/api/portraits/women/3.jpg", role: "user", verified: false }
+            ];
+            db.posts = [
+                { id: 1, userId: adminId+1, media: "https://picsum.photos/id/1015/600/400", mediaType: "image", caption: "Красивый пейзаж!", createdAt: Date.now()-86400000, repostOf: null },
+                { id: 2, userId: adminId+2, media: "https://www.w3schools.com/html/mov_bbb.mp4", mediaType: "video", caption: "Смешное видео", createdAt: Date.now()-172800000, repostOf: null }
+            ];
+            db.stories = [
+                { id: 1, userId: adminId+1, media: "https://picsum.photos/id/101/300/300", mediaType: "image", createdAt: Date.now()-10000000 }
+            ];
+            db.likes = [];
+            db.subscriptions = [];
+            db.comments = [];
+            db.verificationRequests = [];
+            saveData();
+        }
+    }
+    function saveData() { localStorage.setItem("scarlled_db", JSON.stringify(db)); }
+
+    function getUserById(id) { return db.users.find(u => u.id === id); }
+    function isFollowing(followerId, followingId) { return db.subscriptions.some(s => s.followerId === followerId && s.followingId === followingId); }
+    function getFollowersCount(userId) { return db.subscriptions.filter(s => s.followingId === userId).length; }
+    function toggleFollow(followerId, followingId) {
+        if (isFollowing(followerId, followingId)) db.subscriptions = db.subscriptions.filter(s => !(s.followerId === followerId && s.followingId === followingId));
+        else db.subscriptions.push({ followerId, followingId });
+        saveData();
+        renderFeed(); renderSuggestions(); renderVerifyBlock();
+    }
+    function likePost(userId, postId) {
+        const exists = db.likes.some(l => l.userId === userId && l.postId === postId);
+        if (exists) db.likes = db.likes.filter(l => !(l.userId === userId && l.postId === postId));
+        else db.likes.push({ userId, postId });
+        saveData();
+        renderFeed();
+    }
+    function isLiked(userId, postId) { return db.likes.some(l => l.userId === userId && l.postId === postId); }
+    function addPost(userId, mediaData, mediaType, caption, repostOf = null) {
+        db.posts.unshift({ id: Date.now(), userId, media: mediaData, mediaType, caption, createdAt: Date.now(), repostOf });
+        saveData();
+        renderFeed();
+    }
+    function addStory(userId, mediaData, mediaType) {
+        db.stories.unshift({ id: Date.now(), userId, media: mediaData, mediaType, createdAt: Date.now() });
+        saveData();
+        renderStories();
+    }
+    function addComment(userId, postId, text) {
+        if (!text.trim()) return;
+        db.comments.push({ id: Date.now(), userId, postId, text, createdAt: Date.now() });
+        saveData();
+        renderFeed();
+    }
+    function getComments(postId) { return db.comments.filter(c => c.postId === postId).sort((a,b)=>a.createdAt-b.createdAt); }
+
+    function requestVerification(userId) {
+        if (getFollowersCount(userId) < 100) { alert("Нужно минимум 100 подписчиков!"); return; }
+        if (db.verificationRequests.some(r => r.userId === userId && r.status === 'pending')) { alert("Заявка уже отправлена"); return; }
+        db.verificationRequests.push({ userId, status: 'pending' });
+        saveData();
+        alert("Заявка отправлена администратору");
+        renderVerifyBlock();
+        if (getUserById(currentUserId)?.role === 'admin') renderAdminBlock();
+    }
+    function approveRequest(userId) {
+        const req = db.verificationRequests.find(r => r.userId === userId);
+        if (req) req.status = 'approved';
+        const user = getUserById(userId);
+        if (user) user.verified = true;
+        saveData();
+        renderFeed(); renderSuggestions(); renderVerifyBlock(); renderAdminBlock(); renderHeader();
+    }
+    function rejectRequest(userId) {
+        db.verificationRequests = db.verificationRequests.filter(r => !(r.userId === userId));
+        saveData();
+        renderAdminBlock();
+    }
+
+    function renderStories() {
+        const container = document.getElementById("storiesContainer");
+        let html = `<div class="story-item" id="addStoryBtn"><div class="story-img story-add">+</div><div class="story-name">Добавить</div></div>`;
+        db.stories.forEach(s => {
+            const user = getUserById(s.userId);
+            if (user) html += `<div class="story-item" data-story-media="${s.media}" data-story-type="${s.mediaType}"><img class="story-img" src="${s.media}"><div class="story-name">${user.name.split(' ')[0]}</div></div>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.story-item[data-story-media]').forEach(el => {
+            el.addEventListener('click', () => {
+                const media = el.dataset.storyMedia, type = el.dataset.storyType;
+                document.getElementById("viewerImage").style.display = "none";
+                document.getElementById("viewerVideo").style.display = "none";
+                if (type === "image") { document.getElementById("viewerImage").src = media; document.getElementById("viewerImage").style.display = "block"; }
+                else { document.getElementById("viewerVideo").src = media; document.getElementById("viewerVideo").style.display = "block"; document.getElementById("viewerVideo").load(); }
+                document.getElementById("storyViewer").style.display = "flex";
+            });
+        });
+        document.getElementById("addStoryBtn")?.addEventListener("click", () => document.getElementById("storyModal").style.display = "flex");
+    }
+
+    function renderFeed() {
+        const container = document.getElementById("feedContainer");
+        const followingIds = db.subscriptions.filter(s => s.followerId === currentUserId).map(s => s.followingId);
+        followingIds.push(currentUserId);
+        let posts = db.posts.filter(p => followingIds.includes(p.userId)).sort((a,b)=>b.createdAt-a.createdAt);
+        if (posts.length === 0) { container.innerHTML = `<div style="background:white; padding:20px; text-align:center;">Нет постов</div>`; return; }
+        let html = "";
+        posts.forEach(post => {
+            const author = getUserById(post.userId);
+            const liked = isLiked(currentUserId, post.id);
+            const comments = getComments(post.id);
+            html += `<div class="post-card">
+                <div class="post-header" data-user-id="${author.id}">
+                    <img class="post-avatar" src="${author?.avatar}"><div><div class="post-author">${author?.name} ${author?.verified ? (author.role==='admin' ? '<span class="verified-badge gray-badge">✓</span>' : '<span class="verified-badge blue-badge">✓</span>') : ''}</div><div class="post-time">${new Date(post.createdAt).toLocaleString()}</div></div>
+                </div>
+                ${post.repostOf ? `<div style="padding:0 16px; font-size:13px; color:#65676b;">📌 Репост</div>` : ''}
+                ${post.media ? (post.mediaType==='image' ? `<img class="post-media" src="${post.media}">` : `<video class="post-media" controls src="${post.media}"></video>`) : ''}
+                <div class="post-caption">${post.caption || ''}</div>
+                <div class="post-actions">
+                    <button class="action-btn like-btn ${liked ? 'liked' : ''}" data-post-id="${post.id}">❤️ ${db.likes.filter(l=>l.postId===post.id).length} ${liked ? 'Нравится' : 'Мне нравится'}</button>
+                    <button class="action-btn repost-btn" data-post-id="${post.id}">🔄 Репост</button>
+                </div>
+                <div class="comments-section">
+                    ${comments.map(c => {
+                        const user = getUserById(c.userId);
+                        return `<div class="comment"><img class="comment-avatar" src="${user?.avatar}"><div class="comment-text"><span class="comment-author" data-user-id="${user.id}">${user?.name}</span> ${c.text}</div></div>`;
+                    }).join('')}
+                    <div class="add-comment"><input type="text" placeholder="Написать комментарий..." class="comment-input" data-post-id="${post.id}"><button class="comment-submit" data-post-id="${post.id}">→</button></div>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.like-btn').forEach(btn => btn.addEventListener('click', () => likePost(currentUserId, parseInt(btn.dataset.postId))));
+        document.querySelectorAll('.repost-btn').forEach(btn => btn.addEventListener('click', () => {
+            const postId = parseInt(btn.dataset.postId);
+            const original = db.posts.find(p => p.id === postId);
+            if (original) addPost(currentUserId, original.media, original.mediaType, original.caption, original.id);
+            else alert("Не удалось сделать репост");
+        }));
+        document.querySelectorAll('.comment-submit').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const postId = parseInt(btn.dataset.postId);
+                const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
+                if (input.value.trim()) addComment(currentUserId, postId, input.value);
+                input.value = '';
+            });
+        });
+        document.querySelectorAll('.post-header, .comment-author').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const userId = parseInt(el.dataset.userId);
+                if (userId) showProfile(userId);
+            });
+        });
+    }
+
+    function showProfile(userId) {
+        const user = getUserById(userId);
+        if (!user) return;
+        const followers = getFollowersCount(userId);
+        const following = db.subscriptions.filter(s => s.followerId === userId).length;
+        const isFollow = isFollowing(currentUserId, userId);
+        document.getElementById("profileCard").innerHTML = `
+            <img class="profile-avatar" src="${user.avatar}"><h3>${user.name} ${user.verified ? (user.role==='admin' ? '<span class="gray-badge">✓</span>' : '<span class="blue-badge">✓</span>') : ''}</h3>
+            <div class="profile-stats"><div>Подписчики: ${followers}</div><div>Подписки: ${following}</div></div>
+            ${userId !== currentUserId ? `<button id="profileFollowBtn" class="subscribe-btn ${isFollow ? 'unsubscribe-btn' : ''}">${isFollow ? 'Отписаться' : 'Подписаться'}</button>` : ''}
+            <button id="closeProfileModal" class="close-modal" style="margin-top:16px;">Закрыть</button>
+        `;
+        document.getElementById("profileModal").style.display = "flex";
+        if (userId !== currentUserId) document.getElementById("profileFollowBtn")?.addEventListener("click", () => { toggleFollow(currentUserId, userId); showProfile(userId); });
+        document.getElementById("closeProfileModal")?.addEventListener("click", () => document.getElementById("profileModal").style.display = "none");
+    }
+
+    function renderSuggestions() {
+        const container = document.getElementById("suggestionsList");
+        let html = "";
+        db.users.filter(u => u.id !== currentUserId).forEach(user => {
+            const following = isFollowing(currentUserId, user.id);
+            html += `<div class="suggestion-user"><div class="suggestion-info" data-user-id="${user.id}"><img class="suggestion-avatar" src="${user.avatar}"><span>${user.name} ${user.verified ? (user.role==='admin' ? '<span class="gray-badge">✓</span>' : '<span class="blue-badge">✓</span>') : ''}</span></div><button class="subscribe-btn ${following ? 'unsubscribe-btn' : ''}" data-user-id="${user.id}">${following ? 'Отписаться' : 'Подписаться'}</button></div>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.subscribe-btn').forEach(btn => btn.addEventListener('click', () => toggleFollow(currentUserId, parseInt(btn.dataset.userId))));
+        document.querySelectorAll('.suggestion-info').forEach(el => el.addEventListener('click', () => showProfile(parseInt(el.dataset.userId))));
+    }
+
+    function renderVerifyBlock() {
+        const container = document.getElementById("verifyBlock");
+        const user = getUserById(currentUserId);
+        if (!user) return;
+        if (user.verified) { container.innerHTML = `<div class="verified-info">✓ Аккаунт верифицирован</div>`; return; }
+        const followers = getFollowersCount(currentUserId);
+        const hasRequest = db.verificationRequests.some(r => r.userId === currentUserId && r.status === 'pending');
+        if (followers >= 100 && !hasRequest) container.innerHTML = `<button id="requestVerifyBtn" class="subscribe-btn">Подать заявку на верификацию (${followers}/100 подписчиков)</button>`;
+        else if (hasRequest) container.innerHTML = `<div>Заявка на верификацию отправлена администратору</div>`;
+        else container.innerHTML = `<div>Для верификации нужно 100 подписчиков. Сейчас: ${followers}</div>`;
+        document.getElementById("requestVerifyBtn")?.addEventListener("click", () => requestVerification(currentUserId));
+    }
+
+    function renderAdminBlock() {
+        const container = document.getElementById("adminBlock");
+        const user = getUserById(currentUserId);
+        if (user?.role !== 'admin') { container.style.display = "none"; return; }
+        container.style.display = "block";
+        const pending = db.verificationRequests.filter(r => r.status === 'pending');
+        if (pending.length === 0) { container.innerHTML = `<div class="suggestions-title">Админ-панель</div><div>Нет активных заявок</div>`; return; }
+        let html = `<div class="suggestions-title">Заявки на верификацию</div>`;
+        pending.forEach(req => {
+            const u = getUserById(req.userId);
+            if (u) html += `<div class="request-item"><b>${u.name}</b> (подписчиков: ${getFollowersCount(u.id)})<div class="request-actions"><button class="approve-btn" data-user="${u.id}">✅ Одобрить</button><button class="reject-btn" data-user="${u.id}">❌ Отклонить</button></div></div>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.approve-btn').forEach(btn => btn.addEventListener('click', () => approveRequest(parseInt(btn.dataset.user))));
+        document.querySelectorAll('.reject-btn').forEach(btn => btn.addEventListener('click', () => rejectRequest(parseInt(btn.dataset.user))));
+    }
+
+    function renderHeader() {
+        const user = getUserById(currentUserId);
+        document.getElementById("currentUserAvatar").src = user.avatar;
+        document.getElementById("currentUserName").innerHTML = `${user.name} ${user.verified ? (user.role==='admin' ? '<span class="verified-badge gray-badge">✓</span>' : '<span class="verified-badge blue-badge">✓</span>') : ''}`;
+        document.getElementById("currentUserName").onclick = () => showProfile(currentUserId);
+    }
+
+    // Auth
+    function register(name, username, email, password, avatar) {
+        if (db.users.some(u => u.email === email || u.username === username)) { alert("Пользователь уже существует"); return false; }
+        const newId = Date.now();
+        db.users.push({ id: newId, name, username, email, password, avatar: avatar || `https://randomuser.me/api/portraits/${Math.random()>0.5?'men':'women'}/${Math.floor(Math.random()*50)}.jpg`, role: "user", verified: false });
+        saveData();
+        alert("Регистрация успешна!");
+        return true;
+    }
+    function login(emailOrUsername, password) {
+        const user = db.users.find(u => (u.email === emailOrUsername || u.username === emailOrUsername) && u.password === password);
+        if (user) { currentUserId = user.id; localStorage.setItem("currentUserId", currentUserId); showApp(); return true; }
+        alert("Неверные данные");
+        return false;
+    }
+    function logout() { currentUserId = null; localStorage.removeItem("currentUserId"); document.getElementById("appContainer").style.display = "none"; document.getElementById("authContainer").style.display = "flex"; }
+    function showApp() {
+        document.getElementById("authContainer").style.display = "none";
+        document.getElementById("appContainer").style.display = "block";
+        renderHeader(); renderStories(); renderFeed(); renderSuggestions(); renderVerifyBlock(); renderAdminBlock();
+    }
+
+    // Event listeners
+    document.getElementById("doLogin")?.addEventListener("click", () => login(document.getElementById("loginEmail").value, document.getElementById("loginPassword").value));
+    document.getElementById("showRegister")?.addEventListener("click", () => { document.getElementById("loginForm").style.display = "none"; document.getElementById("registerForm").style.display = "block"; });
+    document.getElementById("showLogin")?.addEventListener("click", () => { document.getElementById("registerForm").style.display = "none"; document.getElementById("loginForm").style.display = "block"; });
+    document.getElementById("doRegister")?.addEventListener("click", () => {
+        const name=document.getElementById("regName").value, username=document.getElementById("regUsername").value, email=document.getElementById("regEmail").value, pwd=document.getElementById("regPassword").value, avatar=document.getElementById("regAvatar").value;
+        if (!name||!username||!email||!pwd) alert("Заполните все поля");
+        else if (register(name,username,email,pwd,avatar)) { document.getElementById("registerForm").style.display = "none"; document.getElementById("loginForm").style.display = "block"; }
+    });
+    document.getElementById("logoutBtn")?.addEventListener("click", logout);
+    document.getElementById("fab")?.addEventListener("click", () => document.getElementById("postModal").style.display = "flex");
+    document.getElementById("closePostModal")?.addEventListener("click", () => document.getElementById("postModal").style.display = "none");
+    document.getElementById("closeStoryModal")?.addEventListener("click", () => document.getElementById("storyModal").style.display = "none");
+    document.getElementById("closeStoryViewer")?.addEventListener("click", () => document.getElementById("storyViewer").style.display = "none");
+    document.getElementById("submitPost")?.addEventListener("click", () => {
+        const file = document.getElementById("postFile").files[0];
+        if (!file) { alert("Выберите медиа"); return; }
+        const type = file.type.startsWith("image/") ? "image" : "video";
+        const reader = new FileReader();
+        reader.onload = e => { addPost(currentUserId, e.target.result, type, document.getElementById("postCaption").value); document.getElementById("postModal").style.display = "none"; document.getElementById("postCaption").value=""; document.getElementById("postFile").value=""; };
+        reader.readAsDataURL(file);
+    });
+    document.getElementById("submitStory")?.addEventListener("click", () => {
+        const file = document.getElementById("storyFile").files[0];
+        if (!file) return;
+        const type = file.type.startsWith("image/") ? "image" : "video";
+        const reader = new FileReader();
+        reader.onload = e => { addStory(currentUserId, e.target.result, type); document.getElementById("storyModal").style.display = "none"; document.getElementById("storyFile").value=""; };
+        reader.readAsDataURL(file);
+    });
+
+    loadData();
+    const saved = localStorage.getItem("currentUserId");
+    if (saved && db.users.some(u => u.id == saved)) { currentUserId = parseInt(saved); showApp(); }
+    else { document.getElementById("authContainer").style.display = "flex"; document.getElementById("appContainer").style.display = "none"; }
+</script>
+</body>
+</html>
